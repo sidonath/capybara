@@ -172,6 +172,26 @@ RSpec.describe Capybara::Selenium::Driver do
         expect(session.driver.browser.local_storage.keys).not_to be_empty
         expect(session.driver.browser.session_storage.keys).not_to be_empty
       end
+
+      context 'with sleep within #reset_browser_state' do
+        before do
+          $sleep_before_navigate = true
+        end
+
+        after do
+          $sleep_before_navigate = false
+        end
+
+        it 'clears a cookie set from a long-running ajax request' do
+          session = Capybara::Session.new(:selenium_firefox_not_clear_storage, TestApp)
+          session.visit('/with_js')
+          session.find(:css, '#fire_ajax_request_that_sets_a_cookie').click
+          session.reset!
+
+          session.visit('/get_cookie')
+          expect(session.body).not_to include('test_slow_cookie')
+        end
+      end
     end
   end
 

@@ -121,4 +121,26 @@ RSpec.describe 'Capybara::Session with chrome' do
       expect(session).to have_current_path('/form')
     end
   end
+
+  context 'storage' do
+    describe '#reset!' do
+      before do
+        $sleep_before_navigate = true
+      end
+
+      after do
+        $sleep_before_navigate = false
+      end
+
+      it 'clears a cookie set from a long-running ajax request' do
+        session = Capybara::Session.new(:selenium_chrome_not_clear_storage, TestApp)
+        session.visit('/with_js')
+        session.find(:css, '#fire_ajax_request_that_sets_a_cookie').click
+        session.reset!
+
+        session.visit('/get_cookie')
+        expect(session.body).not_to include('test_slow_cookie')
+      end
+    end
+  end
 end

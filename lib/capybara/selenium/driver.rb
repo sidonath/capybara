@@ -444,6 +444,7 @@ private
 
   def reset_browser_state
     clear_browser_state
+    sleep 2 if $sleep_before_navigate
     @browser.navigate.to('about:blank')
   end
 

@@ -127,6 +127,13 @@ class TestApp < Sinatra::Base
     "Cookie set to #{cookie_value}"
   end
 
+  get '/slow_set_cookie' do
+    cookie_value = 'test_slow_cookie'
+    sleep 2
+    response.set_cookie('capybara', cookie_value)
+    "Cookie set to #{cookie_value}"
+  end
+
   get '/get_cookie' do
     request.cookies['capybara']
   end
